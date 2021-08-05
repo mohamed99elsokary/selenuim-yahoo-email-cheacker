@@ -1,0 +1,3 @@
+
+92.0.4515.107_chrome_installer
+pyinstaller.exe yahoo.py --onefile

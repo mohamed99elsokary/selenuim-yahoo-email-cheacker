@@ -7,7 +7,11 @@ import colorama
 from colorama import Fore
 from getmac import get_mac_address as gma
 colorama.init(autoreset=True)
+import time
+timer = 2
 mac = gma()
+print (mac)
+
 macs = ["d0:50:99:f9:fb:48"]
 if mac in macs:
 
@@ -17,46 +21,23 @@ if mac in macs:
     threads_number = int(input("how many threads do u want : "))
 
 
-    def delete_old_emails():
-        files = glob.glob("emails/*")
-        for f in files:
-            os.remove(f)
 
-
-    delete_old_emails()
 
     with open("emails.txt") as f:
         emails = [line.rstrip() for line in f]
+        emails_count=(len(emails))
+        emails_count = int(emails_count/threads_number)
 
-
-    def divide_emails_and_proxy():
-        total = len(emails)
-        if threads_number <= total:
-            batchs = int(len(emails) / threads_number)
-            for id, log in enumerate(emails):
-                fileid = id / batchs
-                file = open(
-                    "emails/miniemails{file}.txt".format(
-                        file=int(fileid) + 1
-                    ),
-                    "a+",
-                )
-                file.write(log + "\n")
-        else:
-            print(f"try to run it again but use a number lesser than {total+1}")
-            exit()
-
-
-    divide_emails_and_proxy()
     def cheack_rate_limte(email , all):
-        if "rate limted" in all:
+        if "rate limited" in all:
             print(f"{email} rate limted")
             exit()
 
-    def check_email(file_number):
-        with open(f"emails/miniemails{file_number}.txt") as f:
-            emails = [line.rstrip() for line in f]
-        for email in emails:
+    def check_email(emails,emails_count):
+
+        for i in range (emails_count):
+            email=emails[0]
+            del emails[0]
             options = webdriver.ChromeOptions()
             options.add_experimental_option('excludeSwitches', ['enable-logging'])
             driver = webdriver.Chrome(executable_path=path, options=options)
@@ -79,23 +60,23 @@ if mac in macs:
             except:
                 cheack_rate_limte(email,all)
 
-                print(f"{Fore.YELLOW}{email} is live")
                 file = open(
                     "live emails.txt",
-                    "a",
+                    "a+",
                 )
                 file.write(email)
                 file.write("\n")
-
+                file.close()
+                print(f"{Fore.YELLOW}{email} is live")
+            
+            time.sleep(timer)
             driver.quit()
 
 
     threads = []
-    for file_number in range(threads_number):
-        file_number += 1
-        file_number = str(file_number)
+    for i in range(threads_number):
 
-        thread1 = threading.Thread(target=check_email, args=(file_number,))
+        thread1 = threading.Thread(target=check_email, args=(emails,emails_count))
         thread1.start()
         threads.append(thread1)
 
