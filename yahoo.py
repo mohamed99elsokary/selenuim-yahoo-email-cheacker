@@ -35,7 +35,7 @@ if mac in macs:
 
     def check_email(emails,emails_count):
 
-        for i in range (emails_count):
+        for _ in range (emails_count):
             email=emails[0]
             del emails[0]
             options = webdriver.ChromeOptions()
@@ -60,15 +60,14 @@ if mac in macs:
             except:
                 cheack_rate_limte(email,all)
 
-                file = open(
+                with open(
                     "live emails.txt",
                     "a+",
-                )
-                file.write(email)
-                file.write("\n")
-                file.close()
+                ) as file:
+                    file.write(email)
+                    file.write("\n")
                 print(f"{Fore.YELLOW}{email} is live")
-            
+
             time.sleep(timer)
             driver.quit()
 
